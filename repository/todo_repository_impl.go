@@ -16,7 +16,7 @@ func NewTodoRepository() TodoRepository {
 }
 
 func (repository *TodoRepositoryImpl) InsertTodo(ctx context.Context, db *sql.DB, todo model.Todo) model.Todo {
-	sql := "insert into todo (task, is_complete, create_at) values(?, ?, CURDATE())"
+	sql := "insert into todo (task, is_complete, created_at) values(?, ?, CURDATE())"
 	r, err := db.ExecContext(ctx, sql, todo.Task, todo.IsComplete)
 	utils.PanicIfErr(err)
 	id, err := r.LastInsertId()
@@ -26,20 +26,58 @@ func (repository *TodoRepositoryImpl) InsertTodo(ctx context.Context, db *sql.DB
 }
 
 func (repository *TodoRepositoryImpl) UpdateTodo(ctx context.Context, db *sql.DB, id int, todo model.Todo) model.Todo {
+	sql := "update todo set task = ?, is_complete = ?, update_at = CURDATE() where id = ?"
+	_, err := db.ExecContext(ctx, sql, todo.Task, todo.IsComplete, id)
+	if err != nil {
+		utils.PanicIfErr(err)
+		return model.Todo{}
+	}
+
 	return todo
 }
 
 func (repository *TodoRepositoryImpl) DeleteTodo(ctx context.Context, db *sql.DB, id int) bool {
 
-	return true
+	sql := "delete from todo where id = ?"
+	_, err := db.ExecContext(context.Background(), sql, id)
+	utils.PanicIfErr(err)
+
+	return err == nil
 }
 
 func (repository *TodoRepositoryImpl) FindById(ctx context.Context, db *sql.DB, id int) model.Todo {
 
-	return model.Todo{}
+	sql := "select id, task, is_complete, created_at, update_at from todo where id = ?"
+	r, err := db.QueryContext(context.Background(), sql, id)
+	utils.PanicIfErr(err)
+	defer r.Close()
+
+	todo := model.Todo{}
+
+	if r.Next() {
+		errQuery := r.Scan(&todo.Id, &todo.Task, &todo.IsComplete, &todo.CreateAt, &todo.UpdateAt)
+		utils.PanicIfErr(errQuery)
+	}
+
+	return todo
 }
 
 func (repository *TodoRepositoryImpl) FindAll(ctx context.Context, db *sql.DB) []model.Todo {
 
-	return []model.Todo{}
+	todos := []model.Todo{}
+
+	sql := "select id, task, is_complete, created_at, update_at from todo"
+
+	r, err := db.QueryContext(ctx, sql)
+	utils.PanicIfErr(err)
+	defer r.Close()
+
+	for r.Next() {
+		todo := model.Todo{}
+		errQuery := r.Scan(&todo.Id, &todo.Task, &todo.IsComplete, &todo.CreateAt, &todo.UpdateAt)
+		utils.PanicIfErr(errQuery)
+		todos = append(todos, todo)
+	}
+
+	return todos
 }

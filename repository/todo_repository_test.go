@@ -20,3 +20,48 @@ func TestInsertTodo(t *testing.T) {
 
 	assert.Equal(t, todo.Task, result.Task)
 }
+
+func TestUpdateTodo(t *testing.T) {
+	repository := NewTodoRepository()
+	db := NewDB()
+
+	todo := model.Todo{
+		Id:         1,
+		Task:       "Updated Task",
+		IsComplete: true,
+	}
+
+	result := repository.UpdateTodo(context.Background(), db.Mysql, todo.Id, todo)
+
+	assert.Equal(t, todo.Task, result.Task)
+
+}
+
+func TestDeleteTodo(t *testing.T) {
+	db := NewDB()
+	repository := NewTodoRepository()
+
+	result := repository.DeleteTodo(context.Background(), db.Mysql, 3)
+
+	assert.True(t, result)
+}
+
+func TestFindByid(t *testing.T) {
+	tr := NewTodoRepository()
+	db := NewDB().Mysql
+
+	todo := tr.FindById(context.Background(), db, 4)
+
+	assert.Equal(t, "Learn Golang", todo.Task)
+
+}
+
+func TestFindAll(t *testing.T) {
+	tr := NewTodoRepository()
+	db := NewDB().Mysql
+
+	todos := tr.FindAll(context.Background(), db)
+
+	assert.Len(t, todos, 1)
+
+}
