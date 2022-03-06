@@ -16,8 +16,9 @@ func TestInsertTodo(t *testing.T) {
 		Task:       "Learn Golang",
 		IsComplete: false,
 	}
-	result := repository.InsertTodo(context.Background(), db.Mysql, todo)
+	result, err := repository.InsertTodo(context.Background(), db.Mysql, todo)
 
+	assert.Nil(t, err)
 	assert.Equal(t, todo.Task, result.Task)
 }
 
@@ -31,8 +32,9 @@ func TestUpdateTodo(t *testing.T) {
 		IsComplete: true,
 	}
 
-	result := repository.UpdateTodo(context.Background(), db.Mysql, todo.Id, todo)
+	result, err := repository.UpdateTodo(context.Background(), db.Mysql, todo.Id, todo)
 
+	assert.Nil(t, err)
 	assert.Equal(t, todo.Task, result.Task)
 
 }
@@ -50,8 +52,9 @@ func TestFindByid(t *testing.T) {
 	tr := NewTodoRepository()
 	db := NewDB().Mysql
 
-	todo := tr.FindById(context.Background(), db, 4)
+	todo, err := tr.FindById(context.Background(), db, 4)
 
+	assert.Nil(t, err)
 	assert.Equal(t, "Learn Golang", todo.Task)
 
 }

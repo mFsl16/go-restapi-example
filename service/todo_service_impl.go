@@ -2,40 +2,45 @@ package service
 
 import (
 	"context"
-	"database/sql"
 
+	"github.com/mFsl16/go-restapi-example/exception"
 	"github.com/mFsl16/go-restapi-example/model"
 	"github.com/mFsl16/go-restapi-example/repository"
 )
 
 type TodoServiceImpl struct {
 	TodoRepository repository.TodoRepository
-	Mysql          *sql.DB
+	Repo           *repository.Database
 }
 
-func NewTodoService(repository repository.TodoRepository, sql *sql.DB) TodoService {
+func NewTodoService(todoRepository repository.TodoRepository, repo *repository.Database) TodoService {
 	return &TodoServiceImpl{
-		TodoRepository: repository,
-		Mysql:          sql,
+		TodoRepository: todoRepository,
+		Repo:           repo,
 	}
 }
 
-func (service *TodoServiceImpl) CreateTodo(ctx context.Context, sql *sql.DB, todo model.Todo) model.Todo {
+func (service *TodoServiceImpl) CreateTodo(ctx context.Context, todo model.Todo) model.Todo {
+
+	todo, err := service.TodoRepository.InsertTodo(ctx, service.Repo.Mysql, todo)
+	if err != nil {
+		panic(exception.NewCommonException(err.Error()))
+	}
+	return todo
+}
+
+func (service *TodoServiceImpl) UpdateTodo(ctx context.Context, id int, todo model.Todo) model.Todo {
 	return model.Todo{}
 }
 
-func (service *TodoServiceImpl) UpdateTodo(ctx context.Context, sql *sql.DB, id int, todo model.Todo) model.Todo {
+func (service *TodoServiceImpl) DeleteTodo(ctx context.Context, id int) model.Todo {
 	return model.Todo{}
 }
 
-func (service *TodoServiceImpl) DeleteTodo(ctx context.Context, sql *sql.DB, id int) model.Todo {
+func (service *TodoServiceImpl) FindTodoById(ctx context.Context, id int) model.Todo {
 	return model.Todo{}
 }
 
-func (service *TodoServiceImpl) FindTodoById(ctx context.Context, sql *sql.DB, id int) model.Todo {
-	return model.Todo{}
-}
-
-func (service *TodoServiceImpl) FindAllTodo(ctx context.Context, sql *sql.DB) []model.Todo {
+func (service *TodoServiceImpl) FindAllTodo(ctx context.Context) []model.Todo {
 	return []model.Todo{}
 }
