@@ -30,17 +30,50 @@ func (service *TodoServiceImpl) CreateTodo(ctx context.Context, todo model.Todo)
 }
 
 func (service *TodoServiceImpl) UpdateTodo(ctx context.Context, id int, todo model.Todo) model.Todo {
-	return model.Todo{}
+
+	todoResult, err := service.TodoRepository.FindById(ctx, service.Repo.Mysql, id)
+	if err != nil {
+		panic(exception.NewCommonException(err.Error()))
+	}
+
+	todo.Id = todoResult.Id
+
+	t, errUpdate := service.TodoRepository.UpdateTodo(ctx, service.Repo.Mysql, todo.Id, todo)
+	if errUpdate != nil {
+		panic(exception.NewCommonException(err.Error()))
+	}
+
+	return t
 }
 
 func (service *TodoServiceImpl) DeleteTodo(ctx context.Context, id int) model.Todo {
-	return model.Todo{}
+
+	todoResult, err := service.TodoRepository.FindById(ctx, service.Repo.Mysql, id)
+	if err != nil {
+		panic(exception.NewCommonException(err.Error()))
+	}
+
+	isSuccess := service.TodoRepository.DeleteTodo(ctx, service.Repo.Mysql, id)
+
+	if !isSuccess {
+		panic(exception.NewCommonException("failed to delete todo, todo not found"))
+	}
+
+	return todoResult
 }
 
 func (service *TodoServiceImpl) FindTodoById(ctx context.Context, id int) model.Todo {
-	return model.Todo{}
+
+	todoResult, err := service.TodoRepository.FindById(ctx, service.Repo.Mysql, id)
+	if err != nil {
+		panic(exception.NewCommonException("todo not found"))
+	}
+
+	return todoResult
 }
 
 func (service *TodoServiceImpl) FindAllTodo(ctx context.Context) []model.Todo {
-	return []model.Todo{}
+
+	t := service.TodoRepository.FindAll(ctx, service.Repo.Mysql)
+	return t
 }
