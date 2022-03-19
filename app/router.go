@@ -1,22 +1,21 @@
 package app
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mFsl16/go-restapi-example/utils"
+	"github.com/mFsl16/go-restapi-example/controller"
 )
 
-func NewRouter() *httprouter.Router {
+func NewRouter(controller controller.TodoController) *httprouter.Router {
 	router := httprouter.New()
 
-	router.GET("/", func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		rw.Header().Add("Content-Type", "application/json")
-		encoder := json.NewEncoder(rw)
-		err := encoder.Encode("Welcome To My API")
-		utils.PanicIfErr(err)
-	})
+	router.GET("/", controller.Home)
+	router.POST("/todo/create", controller.CreateTodo)
+	router.PUT("/todo/update/:id", controller.UpdateTodo)
+	router.DELETE("/todo/delete/:id", controller.DeleteTodo)
+	router.GET("/todo/:id", controller.FindById)
+	router.GET("/todo", controller.FindAll)
 
 	return router
 

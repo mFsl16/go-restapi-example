@@ -7,13 +7,20 @@
 package app
 
 import (
+	"github.com/mFsl16/go-restapi-example/controller"
+	"github.com/mFsl16/go-restapi-example/repository"
+	"github.com/mFsl16/go-restapi-example/service"
 	"net/http"
 )
 
 // Injectors from injector.go:
 
 func NewApp() *http.Server {
-	router := NewRouter()
+	todoRepository := repository.NewTodoRepository()
+	database := repository.NewDB()
+	todoService := service.NewTodoService(todoRepository, database)
+	todoController := controller.NewTodoController(todoService)
+	router := NewRouter(todoController)
 	server := NewServer(router)
 	return server
 }

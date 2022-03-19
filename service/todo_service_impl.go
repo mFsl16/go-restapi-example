@@ -6,6 +6,8 @@ import (
 	"github.com/mFsl16/go-restapi-example/exception"
 	"github.com/mFsl16/go-restapi-example/model"
 	"github.com/mFsl16/go-restapi-example/repository"
+	"github.com/mFsl16/go-restapi-example/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 type TodoServiceImpl struct {
@@ -36,14 +38,21 @@ func (service *TodoServiceImpl) UpdateTodo(ctx context.Context, id int, todo mod
 		panic(exception.NewCommonException(err.Error()))
 	}
 
+	log.Info("Todo Found", todoResult)
+
 	todo.Id = todoResult.Id
 
-	t, errUpdate := service.TodoRepository.UpdateTodo(ctx, service.Repo.Mysql, todo.Id, todo)
+	log.Info("updating todo start [", todo, "]")
+	t, errUpdate := service.TodoRepository.UpdateTodo(ctx, service.Repo.Mysql, id, todo)
 	if errUpdate != nil {
 		panic(exception.NewCommonException(err.Error()))
 	}
+	log.Info("updating todo end [", t, "]")
 
-	return t
+	after, errAfter := service.TodoRepository.FindById(ctx, service.Repo.Mysql, id)
+	utils.PanicIfErr(errAfter)
+
+	return after
 }
 
 func (service *TodoServiceImpl) DeleteTodo(ctx context.Context, id int) model.Todo {
@@ -65,7 +74,7 @@ func (service *TodoServiceImpl) DeleteTodo(ctx context.Context, id int) model.To
 func (service *TodoServiceImpl) FindTodoById(ctx context.Context, id int) model.Todo {
 
 	todoResult, err := service.TodoRepository.FindById(ctx, service.Repo.Mysql, id)
-	if err != nil {
+	if err != nil || todoResult.Id == 0 {
 		panic(exception.NewCommonException("todo not found"))
 	}
 

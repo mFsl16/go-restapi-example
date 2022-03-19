@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"testing"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -19,7 +20,7 @@ func TestCreateTodo(t *testing.T) {
 		Id:         1,
 		Task:       "Learn Golang",
 		IsComplete: false,
-		CreateAt:   "2022-2-6",
+		CreateAt:   time.Now().String(),
 	}
 	context := context.Background()
 	db := repository.NewDB()
@@ -38,14 +39,14 @@ func TestUpdateTodo(t *testing.T) {
 		Id:         1,
 		Task:       "Learn Golang",
 		IsComplete: false,
-		CreateAt:   "2022-2-6",
+		CreateAt:   time.Now().String(),
 	}
 
 	todoUpdate := model.Todo{
 		Id:         1,
 		Task:       "Updated Task",
 		IsComplete: false,
-		CreateAt:   "2022-2-6",
+		CreateAt:   time.Now().String(),
 	}
 
 	context := context.Background()
@@ -67,7 +68,7 @@ func TestDeleteTodo(t *testing.T) {
 		Id:         1,
 		Task:       "Learn Golang",
 		IsComplete: false,
-		CreateAt:   "2022-2-6",
+		CreateAt:   time.Now().String(),
 	}
 
 	context := context.Background()
@@ -91,7 +92,7 @@ func TestFindById(t *testing.T) {
 		Id:         1,
 		Task:       "Learn Golang",
 		IsComplete: false,
-		CreateAt:   "2022-2-6",
+		CreateAt:   time.Now().String(),
 	}
 
 	context := context.Background()
@@ -113,7 +114,7 @@ func TestFindAllTodo(t *testing.T) {
 		Id:         1,
 		Task:       "Learn Golang",
 		IsComplete: false,
-		CreateAt:   "2022-2-6",
+		CreateAt:   time.Now().String(),
 	}
 
 	todos := []model.Todo{}
