@@ -7,7 +7,7 @@ import (
 	"github.com/mFsl16/go-restapi-example/controller"
 )
 
-func NewRouter(controller controller.TodoController) *httprouter.Router {
+func NewRouter(controller controller.TodoController, postController controller.PostController) *httprouter.Router {
 	router := httprouter.New()
 
 	router.GET("/", controller.Home)
@@ -16,6 +16,8 @@ func NewRouter(controller controller.TodoController) *httprouter.Router {
 	router.DELETE("/todo/delete/:id", controller.DeleteTodo)
 	router.GET("/todo/:id", controller.FindById)
 	router.GET("/todo", controller.FindAll)
+
+	router.GET("/post/:id", postController.FindPostById)
 
 	return router
 

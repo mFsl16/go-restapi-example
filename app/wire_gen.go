@@ -7,6 +7,7 @@
 package app
 
 import (
+	"github.com/go-resty/resty/v2"
 	"github.com/mFsl16/go-restapi-example/controller"
 	"github.com/mFsl16/go-restapi-example/repository"
 	"github.com/mFsl16/go-restapi-example/service"
@@ -20,7 +21,10 @@ func NewApp() *http.Server {
 	database := repository.NewDB()
 	todoService := service.NewTodoService(todoRepository, database)
 	todoController := controller.NewTodoController(todoService)
-	router := NewRouter(todoController)
+	client := resty.New()
+	httpClientService := service.NewHttpClientService(client)
+	postController := controller.NewPostController(httpClientService)
+	router := NewRouter(todoController, postController)
 	server := NewServer(router)
 	return server
 }

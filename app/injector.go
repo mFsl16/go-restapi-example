@@ -6,6 +6,7 @@ package app
 import (
 	"net/http"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/google/wire"
 	"github.com/mFsl16/go-restapi-example/controller"
 	"github.com/mFsl16/go-restapi-example/repository"
@@ -20,6 +21,9 @@ func NewApp() *http.Server {
 		repository.NewTodoRepository,
 		service.NewTodoService,
 		controller.NewTodoController,
+		resty.New,
+		controller.NewPostController,
+		service.NewHttpClientService,
 	)
 
 	return nil
